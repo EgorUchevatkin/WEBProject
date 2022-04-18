@@ -1,5 +1,5 @@
 import sqlalchemy
-from .db_session import SqlAlchemyBase
+from web.data.db_session import SqlAlchemyBase
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 
