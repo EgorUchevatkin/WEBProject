@@ -15,7 +15,7 @@ def index():
 def profile_student(id):
     db_sess = db_session.create_session()
     student = db_sess.query(Student).get(id)
-    print(student.name)
+    print(student.name + ' ' + student.surname)
     return render_template('profile_student.html', name_student=student.name + ' ' + student.surname)
 
 
