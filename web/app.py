@@ -11,9 +11,12 @@ def index():
     return render_template('profile_student.html')
 
 
-@app.route('/profile')
-def profile_student():
-    return render_template('profile_student.html')
+@app.route('/profile/<id>')
+def profile_student(id):
+    db_sess = db_session.create_session()
+    student = db_sess.query(Student).get(id)
+    print(student.name)
+    return render_template('profile_student.html', name_student=student.name + ' ' + student.surname)
 
 
 if __name__ == '__main__':
