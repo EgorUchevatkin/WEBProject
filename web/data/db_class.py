@@ -9,7 +9,7 @@ class Student(SqlAlchemyBase):
     id_student = sqlalchemy.Column(sqlalchemy.Integer,
                                    primary_key=True, unique=True, nullable=False)
     name = sqlalchemy.Column(sqlalchemy.VARCHAR(15), nullable=False)
-    surname = sqlalchemy.Column(sqlalchemy.TIME(20), nullable=False)
+    surname = sqlalchemy.Column(sqlalchemy.VARCHAR(20), nullable=False)
     data_of_birth = sqlalchemy.Column(sqlalchemy.DATE, nullable=False)
     id_group = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("group.id_group"))
     gender = sqlalchemy.Column(sqlalchemy.BOOLEAN, nullable=False)
