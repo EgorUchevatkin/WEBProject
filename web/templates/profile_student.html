@@ -10,20 +10,18 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-4 name" style="color: black;">{{ name_student }}</div>
+        <div class="col-4 name" style="color: black;">{{ info_student[0] }}</div>
     </div>
     <div class="row">
-        <div class="col-4 new-card"><span class="age-text">Возраст</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15 лет</div>
+        <div class="col-4 new-card"><span class="age-text">Возраст</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ info_student[1] }}</div>
     </div>
     <div class="row">
         <div class="col-4 main-card" style="color: black; text-align: justify;">
             <div>Разряд&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;КМС</div>
             <!--Тут будет изображение в будущем-->
-            <div>Тренер&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Баранов
-                А.С.
+            <div>Тренер&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ info_student[2] }}
             </div>
-            <div>Группа&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;№9
-                СГ 1
+            <div>Группа&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ info_student[3] }}
             </div>
         </div>
     </div>

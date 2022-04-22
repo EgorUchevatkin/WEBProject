@@ -39,8 +39,9 @@ class Result(SqlAlchemyBase):
     id_still = sqlalchemy.Column(sqlalchemy.ForeignKey("spr_still.id_still"), nullable=False)
     id_dist = sqlalchemy.Column(sqlalchemy.ForeignKey("spr_dist.id_spr_dist"), nullable=False)
     id_student = sqlalchemy.Column(sqlalchemy.ForeignKey("student.id_student"), nullable=False)
-    result = sqlalchemy.Column(sqlalchemy.TIME, nullable=False)
-    id_competition = sqlalchemy.Column(sqlalchemy.INT, sqlalchemy.ForeignKey("competition.id_competition"), nullable=False)
+    result = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    id_competition_r = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey("competition.id_competition"),
+                                         nullable=False)
 
 
 class Group(SqlAlchemyBase):
@@ -55,10 +56,10 @@ class Group(SqlAlchemyBase):
 class Competition(SqlAlchemyBase):
     __tablename__ = 'competition'
 
-    id_competition = sqlalchemy.Column(sqlalchemy.INT,
+    id_competition = sqlalchemy.Column(sqlalchemy.Integer,
                                        primary_key=True, unique=True, nullable=False)
     competition = sqlalchemy.Column(sqlalchemy.VARCHAR(20), nullable=False)
-    data = sqlalchemy.Column(sqlalchemy.DATE, nullable=False)
+    data = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
 
 class Coach(SqlAlchemyBase):
