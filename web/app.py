@@ -62,7 +62,6 @@ def profile_student(id):
                         group.name_group, result_st]
         print(info_student)  # ['Имя и Фам студента', str(дата рождение) 'Имя и Фам тр', 'Имя_Гру',
         # [[длина заплыва, назв стиля, время заплыва, имя соревнований, дата соревнований], и т.п]]
-
         return render_template('profile_student.html', info_student=info_student)
     except :
         return 'Неверный id'
