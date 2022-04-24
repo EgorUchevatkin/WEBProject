@@ -30,8 +30,8 @@ def logout():
 
 @app.route('/', methods=['GET', 'POST'])
 @login_required
-def home():
-    return render_template("home.html")
+def home_group():
+    return render_template("group.html")
 
 
 @app.route('/profile/<id>')
