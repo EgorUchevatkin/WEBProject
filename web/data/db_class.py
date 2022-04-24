@@ -1,6 +1,8 @@
 import datetime
 import sqlalchemy
-from .db_session import SqlAlchemyBase
+from web.data.db_session import SqlAlchemyBase
+from flask_login import UserMixin, LoginManager, login_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Student(SqlAlchemyBase):
@@ -62,10 +64,21 @@ class Competition(SqlAlchemyBase):
     data = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
 
-class Coach(SqlAlchemyBase):
+class Coach(SqlAlchemyBase, UserMixin):
     __tablename__ = 'coach'
 
     id_coach = sqlalchemy.Column(sqlalchemy.Integer,
                                  primary_key=True, unique=True, nullable=False)
     name = sqlalchemy.Column(sqlalchemy.VARCHAR(15), nullable=False)
     surname = sqlalchemy.Column(sqlalchemy.VARCHAR(20), nullable=False)
+    password_couch = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    email_couch = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=True)
+
+    def set_password(self, password):
+        self.password_couch = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_couch, password)
+
+    def get_id(self):
+        return self.id_coach
