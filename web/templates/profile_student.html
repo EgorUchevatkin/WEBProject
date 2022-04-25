@@ -13,20 +13,36 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-4 name" style="color: black;">{{ info_student[0] }}</div>
+        <div class="col-4 name" style="color: black;">12332123</div>
+        <!--Рекорды-->
+        <div class="col-5 offset-3">
+            {% for i in info_student[4] %}
+            <p class="record">{{ i }}</p>
+            {% endfor %}
+        </div>
+        </button>
     </div>
-    <div class="row">
-        <div class="col-4 new-card"><span class="age-text">Возраст</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ info_student[1] }}</div>
+    <!--Вместо -90 в margin-top нужно подставлять -(кол-во рекордов * 30)-->
+    <!--Смотри ниже-->
+    <div class="row" style="margin-top: {{ info_student[5] }}px;">
+        <div class="col-4 new-card"><span class="age-text">Возраст</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{
+            info_student[1] }}
+        </div>
     </div>
     <div class="row">
         <div class="col-4 main-card" style="color: black; text-align: justify;">
             <div>Разряд&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;КМС</div>
             <!--Тут будет изображение в будущем-->
-            <div>Тренер&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ info_student[2] }}
+            <div>Тренер&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{
+                info_student[2] }}
             </div>
-            <div>Группа&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ info_student[3] }}
+            <div>Группа&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{
+                info_student[3] }}
             </div>
         </div>
     </div>
 </div>
+<br><br><br><br><br><br>
+   <button type="submit" class="col-1 btn btn-primary col-3"><a href="{{ url_for('add_result', id=info_student[6]) }}" class="auth_link">Добавить
+        результат</a></button>
 {% endblock %}

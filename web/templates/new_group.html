@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block page_name %}Добавление группы{% endblock %}
+{% block
+content %}
+<form method="POST">
+    <br>
+    <div class="form-group col-5 offset-1">
+        <label for="namel">Тренер</label>
+        <p><select class="col-11 offset-1" name="name_ch" id="name_ch">
+                    {% for i in name_ch_lst %}
+                        <option>{{ i }}</option>
+                    {% endfor %}
+                </select></p>
+    </div>
+
+    <div class="form-group col-5 offset-1">
+        <label for="namel">Имя группы</label>
+        <input
+                type="text"
+                class="form-control"
+                id="name_group"
+                name="name_group"
+        />
+    </div>
+    <label class="offset-2">{{ incorrect }}</label>
+    <br><br>
+    <label>{{ incorrect }}</label>
+    <div>
+        <button type="submit" class="btn btn-primary offset-2">Добавить</button>
+        <button type="submit" class="btn btn-primary offset-2"><a href="{{ url_for('home_group') }}" class="auth_link">Назад</a>
+        </button>
+    </div>
+</form>
+{% endblock %}

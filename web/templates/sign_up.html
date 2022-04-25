@@ -52,7 +52,8 @@ content %}
     <br/>
     <div>
         <button type="submit" class="btn btn-primary offset-2">Зарегистрироваться</button>
-        <button type="submit" class="btn btn-primary offset-2">Авторизироваться</button>
+        <button type="submit" class="btn btn-primary offset-2"><a href="{{ url_for('login') }}" class="auth_link">Авторизироваться</a>
+        </button>
 
     </div>
 </form>

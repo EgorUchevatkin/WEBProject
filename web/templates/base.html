@@ -18,9 +18,15 @@
         <div class="col-3">
             <input type="text" , class="form-control">
         </div>
-        <div class="col-2 offset-2">
-            <button class="btn" style="background-color: #3d9186; color: white;font-size: 18px;">Соревнования</button>
+        <div class="col-2">
+            <button class="btn" style="background-color: #3d9186; color: white;font-size: 18px;"><a href="{{ url_for('competition') }}" class="auth_link">Соревнования</a></button>
         </div>
+        <div class="col-2">
+            <button class="btn" style="background-color: #3d9186; color: white;font-size: 18px;"><a href="{{ url_for('home_group') }}" class="auth_link">группы
+            </a>
+            </button>
+        </div>
+
         <div class="col-2">
             <button class="btn" style="background-color: #3d9186; color: white;font-size: 18px;">Расписание</button>
         </div>

@@ -29,7 +29,12 @@
             </div><br>
         </p>
         <p class="offset-1">{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p class="offset-2">{{ form.submit(type="submit", class="col-2 btn btn-primary") }}</p>
+        <div>
+            <p class="offset-2">{{ form.submit(type="submit", class="col-3 btn btn-primary") }}</p>
+            <button type="submit" class="col-2 btn btn-primary offset-2"><a href="{{ url_for('sign_up') }}" class="auth_link">Зарегистрироваться</a>
+            </button>
+        </div>
         <div class="offset-1">{{ message }}</div>
     </form>
+
 {% endblock %}
