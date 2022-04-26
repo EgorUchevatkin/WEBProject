@@ -51,7 +51,7 @@ class Group(SqlAlchemyBase):
 
     id_group = sqlalchemy.Column(sqlalchemy.Integer,
                                  primary_key=True, unique=True, nullable=False)
-    name_group = sqlalchemy.Column(sqlalchemy.VARCHAR(5), unique=True, nullable=False)
+    name_group = sqlalchemy.Column(sqlalchemy.VARCHAR(15), unique=True, nullable=False)
     id_couch = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("coach.id_coach"))
 
 

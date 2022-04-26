@@ -13,14 +13,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-4 name" style="color: black;">12332123</div>
+        <div class="col-4 name" style="color: black;">{{ info_student[0] }}</div>
         <!--Рекорды-->
         <div class="col-5 offset-3">
             {% for i in info_student[4] %}
             <p class="record">{{ i }}</p>
             {% endfor %}
         </div>
-        </button>
     </div>
     <!--Вместо -90 в margin-top нужно подставлять -(кол-во рекордов * 30)-->
     <!--Смотри ниже-->

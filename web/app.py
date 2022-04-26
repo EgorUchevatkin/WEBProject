@@ -31,16 +31,22 @@ def logout():
 
 @app.route('/', methods=['GET', 'POST'])
 @login_required
-def home_group():
-    print(current_user.id_coach)
-    return render_template("group.html", user=current_user)
+def home_group():  # Нужен запрос группы и участников группы
+    db_sess = db_session.create_session()
+    list_group = db_sess.query(Student).filter(Group.id_coach == current_user.id_coach).first()
+    return render_template("group.html", info_group=[], user=current_user)
 
 
 @app.route('/profile/<id>')
 @login_required
 def profile_student(id):
     db_sess = db_session.create_session()
+    if not db_sess.query(Student).filter(Student.id_student == id).first():
+        return render_template('incotrent.html', title='Сообщение об ошипке', incorent='Не верно указан номер')
     student = db_sess.query(Student).filter(Student.id_student == id).first()
+    if db_sess.query(Group).filter(Group.id_group == student.id_group).first().id_couch != current_user.id_coach:
+        return render_template('incotrent.html', title='Нет доступа',
+                               incorent='Вы не имеете доступ к этому спортсмену')
     group = db_sess.query(Group).filter(Group.id_group == student.id_group).first()
     coach = db_sess.query(Coach).filter(Coach.id_coach == group.id_couch).first()
     today = date.today()
@@ -75,7 +81,7 @@ def login():
         db_sess = db_session.create_session()
         user = db_sess.query(Coach).filter(Coach.email_couch == form.email.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
+            login_user(user)
             return redirect("/")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
@@ -116,6 +122,12 @@ def sign_up():
 @login_required
 def add_result(id):
     db_sess = db_session.create_session()
+    if not db_sess.query(Student).filter(Student.id_student == id).first():
+        return render_template('incotrent.html', title='Сообщение об ошипке', incorent='Не верно указан номер')
+    student = db_sess.query(Student).filter(Student.id_student == id).first()
+    if db_sess.query(Group).filter(Group.id_group == student.id_group).first().id_couch != current_user.id_coach:
+        return render_template('incotrent.html', title='Нет доступа',
+                               incorent='Вы не имеете доступ к этому спортсмену')
     student = db_sess.query(Student).filter(Student.id_student == id).first()
     group = db_sess.query(Group).filter(Group.id_group == student.id_group).first()
     coach = db_sess.query(Coach).filter(Coach.id_coach == group.id_couch).first()
@@ -134,12 +146,18 @@ def add_result(id):
         dist_still = request.form.get('dist_still')
         competition1 = request.form.get('competition')
         time = request.form.get('time')
+        if len(time.split('-')) == 3:
+            rasd = '-'
+        elif len(time.split(':')) == 3:
+            rasd = ':'
+        else:
+            rasd = ' '
         print(time)
         if not time:
             return render_template('new_resultt.html', incorrect='Укажате время', info_student=info_student,
                                    competition_list=competition_list, user=current_user)
-        elif len(time.split(':')) != 3 or len(time.split(':')[0]) != 2 or len(time.split(':')[1]) != 2 or len(
-                time.split(':')[2]) != 2:
+        elif len(time.split(rasd)) != 3 or len(time.split(rasd)[0]) != 2 or len(
+                    time.split(rasd)[1]) != 2 or len(time.split(rasd)[2]) != 2:
             return render_template('new_resultt.html', incorrect='Время указоно не верно', info_student=info_student,
                                    competition_list=competition_list, user=current_user)
         else:
@@ -149,7 +167,7 @@ def add_result(id):
             result.id_still = db_sess.query(SprStill).filter(SprStill.still == dist_still).first().id_still
             result.id_dist = db_sess.query(SprDist).filter(SprDist.long == dist_long.split()[0]).first().id_spr_dist
             result.id_student = id
-            result.result = '-'.join(time.split(':'))
+            result.result = '-'.join(time.split(rasd))
             result.id_competition_r = db_sess.query(Competition).filter(
                 Competition.competition == competition1).first().id_competition
             db_sess = db_session.create_session()
@@ -169,17 +187,30 @@ def add_competition():
         data_c = request.form.get('data')
         print([data_c])
         name_c = request.form.get('name_competition')
-        print(name_c)
-        if len(data_c.split('-')) != 3 or len(data_c.split('-')[0]) != 4 or len(data_c.split('-')[1]) != 2 or len(
-                data_c.split('-')[2]) != 2:
-            print(data_c.split('-'), data_c)
+        if len(data_c.split('-')) == 3:
+            rasd = '-'
+        elif len(data_c.split(':')) == 3:
+            rasd = ':'
+        else:
+            rasd = ' '
+        if len(data_c.split(rasd)) != 3 or len(data_c.split(rasd)[0]) != 4 or len(
+                data_c.split(rasd)[1]) != 2 or len(data_c.split(rasd)[2]) != 2:
             return render_template('new_competition.html', incorrect='Неверно указана дата', user=current_user)
         elif not name_c:
             return render_template('new_competition.html', incorrect='Неуказано имя соревнований', user=current_user)
+        elif len(name_c) >= 20:
+            return render_template('new_competition.html',
+                                   incorrect='Имя соревнований должно быть не более чем 20 символов',
+                                   user=current_user)
+        elif len(name_c) <= 2:
+            return render_template('new_competition.html',
+                                   incorrect='Имя соревнований должно быть больше чем 2 символов',
+                                   user=current_user)
         else:
             coach = Competition()
             coach.id_competition = None
-            coach.data = data_c
+            coach.data = datetime.date(int(data_c.split(rasd)[0]), int(data_c.split(rasd)[1]),
+                                       int(data_c.split(rasd)[2]))
             coach.competition = name_c
             db_sess = db_session.create_session()
             db_sess.add(coach)
@@ -206,7 +237,7 @@ def competition():
 def add_group():
     name_ch_lst = []
     db_sess = db_session.create_session()
-    ch_list = db_sess.query(Coach).all()
+    ch_list = [current_user]
     for i in ch_list:
         name_ch_lst.append(i.name + ' ' + i.surname + ' ' + str(i.id_coach))
     if request.method == 'POST':
@@ -214,7 +245,16 @@ def add_group():
         name_group = request.form.get('name_group')
         print(name_coach, name_group)
         if not name_group:
-            return render_template('new_group.html', incorrect='Неуказано имя группы', name_ch_lst=name_ch_lst, user=current_user)
+            return render_template('new_group.html', incorrect='Неуказано имя группы', name_ch_lst=name_ch_lst,
+                                   user=current_user)
+        elif len(name_group) < 2:
+            return render_template('new_group.html', incorrect='Имя группы должно быть больше 2 символов',
+                                   name_ch_lst=name_ch_lst,
+                                   user=current_user)
+        elif len(name_group) > 15:
+            return render_template('new_group.html', incorrect='Имя группы должно быть меньше 15 символов',
+                                   name_ch_lst=name_ch_lst,
+                                   user=current_user)
         else:
             group = Group()
             group.id_group = None
@@ -244,19 +284,41 @@ def add_student():
         print(name_gr, surname_student, name_student, data_student)
         pol_st = request.form.get('pol')
         print(pol_st)
-        if len(data_student.split('-')) != 3 or len(data_student.split('-')[0]) != 4 or len(
-                data_student.split('-')[1]) != 2 or len(data_student.split('-')[2]) != 2:
-            return render_template('new_student.html', incorrect='Неверно указана дата', name_group=name_group, user=current_user)
-        elif not surname_student or not name_student or not data_student:
-            return render_template('new_student.html', incorrect='Неуказано одно из полей', name_group=name_group, user=current_user)
+        if len(data_student.split('-')) == 3:
+            rasd = '-'
+        elif len(data_student.split(':')) == 3:
+            rasd = ':'
+        else:
+            rasd = ' '
+        if len(data_student.split(rasd)) != 3 or len(data_student.split(rasd)[0]) != 4 or len(
+                data_student.split(rasd)[1]) != 2 or len(data_student.split(rasd)[2]) != 2:
+
+            return render_template('new_student.html', incorrect='Неверно указана дата', name_group=name_group,
+                                   user=current_user)
+        elif len(name_student) >= 15:
+            return render_template('new_student.html', incorrect='Имя должно быть не более чем 15 символов',
+                                   name_group=name_group,
+                                   user=current_user)
+        elif len(name_student) <= 2:
+            return render_template('new_student.html', incorrect='Фамилия должно быть больше чем 2 символов',
+                                   name_group=name_group,
+                                   user=current_user)
+        elif len(surname_student) >= 20:
+            return render_template('new_student.html', incorrect='Фамилия должно быть не более чем 20 символов',
+                                   name_group=name_group,
+                                   user=current_user)
+        elif len(surname_student) <= 2:
+            return render_template('new_student.html', incorrect='Имя должно быть больше чем 2 символов',
+                                   name_group=name_group,
+                                   user=current_user)
         else:
             student = Student()
             student.id_student = None
             student.id_group = name_gr.split()[-1]
             student.name = name_student
             student.surname = surname_student
-            student.data_of_birth = datetime.date(int(data_student.split('-')[0]), int(data_student.split('-')[1]),
-                                                  int(data_student.split('-')[2]))
+            student.data_of_birth = datetime.date(int(data_student.split(rasd)[0]), int(data_student.split(rasd)[1]),
+                                                  int(data_student.split(rasd)[2]))
             if pol_st == 'м':
                 student.gender = 1
             else:
