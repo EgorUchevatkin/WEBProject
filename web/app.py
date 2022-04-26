@@ -230,7 +230,7 @@ def add_group():
 @app.route('/add-student', methods=['GET', 'POST'])
 @login_required
 def add_student():
-    id_coach = 1  # id_coach долже ровняться id пользователя который зашел в систему я незнаю как это сделать
+    id_coach = current_user.id_coach
     name_group = []
     db_sess = db_session.create_session()
     gr_list = db_sess.query(Group).filter(Group.id_couch == id_coach).all()
