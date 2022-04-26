@@ -32,10 +32,12 @@ def logout():
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def home_group():
-    return render_template("group.html")
+    print(current_user.id_coach)
+    return render_template("group.html", user=current_user)
 
 
 @app.route('/profile/<id>')
+@login_required
 def profile_student(id):
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id_student == id).first()
@@ -78,7 +80,7 @@ def login():
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
-    return render_template('login.html', title='Авторизация', form=form)
+    return render_template('login.html', title='Авторизация', form=form, user=current_user)
 
 
 @app.route('/sing-up', methods=['GET', 'POST'])
@@ -91,9 +93,9 @@ def sign_up():
         password2 = request.form.get('password2')
         db_sess = db_session.create_session()
         if password2 != password1:
-            return render_template("sign_up.html", user=current_user, incorrect='Пароли не совподают')
+            return render_template("sign_up.html", incorrect='Пароли не совподают')
         elif db_sess.query(Coach).filter(Coach.email_couch == email).first():
-            return render_template("sign_up.html", user=current_user, incorrect='Почта уже есть в базе данных')
+            return render_template("sign_up.html", incorrect='Почта уже есть в базе данных')
         else:
             new_coach = Coach()
             new_coach.id_coach = None
@@ -111,6 +113,7 @@ def sign_up():
 
 
 @app.route('/add-result/<id>', methods=['GET', 'POST'])
+@login_required
 def add_result(id):
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id_student == id).first()
@@ -134,11 +137,11 @@ def add_result(id):
         print(time)
         if not time:
             return render_template('new_resultt.html', incorrect='Укажате время', info_student=info_student,
-                                   competition_list=competition_list)
+                                   competition_list=competition_list, user=current_user)
         elif len(time.split(':')) != 3 or len(time.split(':')[0]) != 2 or len(time.split(':')[1]) != 2 or len(
                 time.split(':')[2]) != 2:
             return render_template('new_resultt.html', incorrect='Время указоно не верно', info_student=info_student,
-                                   competition_list=competition_list)
+                                   competition_list=competition_list, user=current_user)
         else:
             db_sess = db_session.create_session()
             result = Result()
@@ -155,10 +158,11 @@ def add_result(id):
             return redirect(url_for('profile_student', id=id))
 
     return render_template('new_resultt.html', incorrect='', info_student=info_student,
-                           competition_list=competition_list)
+                           competition_list=competition_list, user=current_user)
 
 
 @app.route('/add-competition', methods=['GET', 'POST'])
+@login_required
 def add_competition():
     print(request.method)
     if request.method == 'POST':
@@ -169,9 +173,9 @@ def add_competition():
         if len(data_c.split('-')) != 3 or len(data_c.split('-')[0]) != 4 or len(data_c.split('-')[1]) != 2 or len(
                 data_c.split('-')[2]) != 2:
             print(data_c.split('-'), data_c)
-            return render_template('new_competition.html', incorrect='Неверно указана дата')
+            return render_template('new_competition.html', incorrect='Неверно указана дата', user=current_user)
         elif not name_c:
-            return render_template('new_competition.html', incorrect='Неуказано имя соревнований')
+            return render_template('new_competition.html', incorrect='Неуказано имя соревнований', user=current_user)
         else:
             coach = Competition()
             coach.id_competition = None
@@ -181,10 +185,11 @@ def add_competition():
             db_sess.add(coach)
             db_sess.commit()
             return redirect(url_for('home_group'))
-    return render_template('new_competition.html', incorrect='')
+    return render_template('new_competition.html', incorrect='', user=current_user)
 
 
 @app.route('/competition')
+@login_required
 def competition():
     info = []
     db_sess = db_session.create_session()
@@ -197,6 +202,7 @@ def competition():
 
 
 @app.route('/add-group', methods=['GET', 'POST'])
+@login_required
 def add_group():
     name_ch_lst = []
     db_sess = db_session.create_session()
@@ -208,7 +214,7 @@ def add_group():
         name_group = request.form.get('name_group')
         print(name_coach, name_group)
         if not name_group:
-            return render_template('new_group.html', incorrect='Неуказано имя группы', name_ch_lst=name_ch_lst)
+            return render_template('new_group.html', incorrect='Неуказано имя группы', name_ch_lst=name_ch_lst, user=current_user)
         else:
             group = Group()
             group.id_group = None
@@ -218,10 +224,11 @@ def add_group():
             db_sess.add(group)
             db_sess.commit()
             return redirect(url_for('home_group'))
-    return render_template('new_group.html', incorrect='', name_ch_lst=name_ch_lst)
+    return render_template('new_group.html', incorrect='', name_ch_lst=name_ch_lst, user=current_user)
 
 
 @app.route('/add-student', methods=['GET', 'POST'])
+@login_required
 def add_student():
     id_coach = 1  # id_coach долже ровняться id пользователя который зашел в систему я незнаю как это сделать
     name_group = []
@@ -239,9 +246,9 @@ def add_student():
         print(pol_st)
         if len(data_student.split('-')) != 3 or len(data_student.split('-')[0]) != 4 or len(
                 data_student.split('-')[1]) != 2 or len(data_student.split('-')[2]) != 2:
-            return render_template('new_student.html', incorrect='Неверно указана дата', name_group=name_group)
+            return render_template('new_student.html', incorrect='Неверно указана дата', name_group=name_group, user=current_user)
         elif not surname_student or not name_student or not data_student:
-            return render_template('new_student.html', incorrect='Неуказано одно из полей', name_group=name_group)
+            return render_template('new_student.html', incorrect='Неуказано одно из полей', name_group=name_group, user=current_user)
         else:
             student = Student()
             student.id_student = None
@@ -258,7 +265,7 @@ def add_student():
             db_sess.add(student)
             db_sess.commit()
             return redirect(url_for('home_group'))
-    return render_template('new_student.html', incorrect='', name_group=name_group)
+    return render_template('new_student.html', incorrect='', name_group=name_group, user=current_user)
 
 
 if __name__ == '__main__':

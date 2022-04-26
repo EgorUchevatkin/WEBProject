@@ -12,23 +12,25 @@
 <body>
 <div class="container navigation" style="font-family: 'Inter'">
     <div class="row align-items-center">
-        <div class="col-2 logo offset-1 dark">
+        <div class="col-2">
+            <button class="btn" style="background-color: #3d9186; color: white;font-size: 14px;"><a class="auth_link" href="{{ url_for('logout') }}">Выйти</a></button>
+        </div>
+        <div class="col-2 logo dark">
             ЛОГО
         </div>
-        <div class="col-3">
-            <input type="text" , class="form-control">
+        <div class="col-2">
+            <input type="text" class="form-control">
         </div>
         <div class="col-2">
-            <button class="btn" style="background-color: #3d9186; color: white;font-size: 18px;"><a href="{{ url_for('competition') }}" class="auth_link">Соревнования</a></button>
+            <button class="btn offset-1" style="background-color: #3d9186; color: white;font-size: 14px;"><a href="{{ url_for('competition') }}" class="auth_link">Соревнования</a></button>
         </div>
         <div class="col-2">
-            <button class="btn" style="background-color: #3d9186; color: white;font-size: 18px;"><a href="{{ url_for('home_group') }}" class="auth_link">группы
+            <button class="btn offset-1" style="background-color: #3d9186; color: white;font-size: 14px;"><a href="{{ url_for('home_group') }}" class="auth_link">Группы
             </a>
             </button>
         </div>
-
         <div class="col-2">
-            <button class="btn" style="background-color: #3d9186; color: white;font-size: 18px;">Расписание</button>
+            <button class="btn offset-1" style="background-color: #3d9186; color: white;font-size: 14px;">Расписание</button>
         </div>
     </div>
     {% block content %}{% endblock %}
