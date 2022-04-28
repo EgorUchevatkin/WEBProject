@@ -31,10 +31,37 @@ def logout():
 
 @app.route('/', methods=['GET', 'POST'])
 @login_required
-def home_group():  # Нужен запрос группы и участников группы
+def home():
     db_sess = db_session.create_session()
-    list_group = db_sess.query(Student).filter(Group.id_coach == current_user.id_coach).first()
-    return render_template("group.html", info_group=[], user=current_user)
+    list_group = []
+    for i in db_sess.query(Group).filter(Group.id_couch == current_user.id_coach).all():
+        list_group.append([i.name_group + ' ' + str(i.id_group), i.id_group])
+    if len(list_group) == 0:
+        list_group = [['У вас нет групп', -11]]
+    return render_template("group.html", info_group=list_group, otstup=str((len(list_group) - 1) * -30),
+                           user=current_user)
+
+
+@app.route('/<id_group>')
+def group(id_group):
+    db_sess = db_session.create_session()
+    if not db_sess.query(Group).filter(Group.id_group == id_group).all():
+        return redirect(url_for('home'))
+    if db_sess.query(Group).filter(Group.id_group == id_group).first().id_couch != current_user.id_coach:
+        return redirect(url_for('home'))
+    info_student = []
+    for i in db_sess.query(Student).filter(Student.id_group == id_group).all():
+        info_student.append([i.name + ' ' + i.surname, i.id_student])
+    list_group = []
+    for i in db_sess.query(Group).filter(Group.id_couch == current_user.id_coach).all():
+        list_group.append([i.name_group + ' ' + str(i.id_group), i.id_group])
+    if len(info_student) == 0:
+        info_student = [['В этой группе нет спортсменов', -1]]
+        otstup = -215
+    else:
+        otstup = -160 + len(info_student) * -30
+    return render_template("group_students.html", info_group=list_group, otstup=otstup,
+                           user=current_user, info_student=info_student)
 
 
 @app.route('/profile/<id>')
@@ -69,7 +96,7 @@ def profile_student(id):
         px = (len(result_st) - 1) * -40 - 10
     info_student = [student.name + ' ' + student.surname, str(student_birth), coach.surname + ' ' + coach.name,
                     group.name_group, result_st, px, id]
-    print(info_student)  # ['Имя и Фам студента', str(дата рождение) 'Имя и Фам тр', 'Имя_Гру',
+    # ['Имя и Фам студента', str(дата рождение) 'Имя и Фам тр', 'Имя_Гру',
     # [[длина заплыва, назв стиля, время заплыва, имя соревнований, дата соревнований], и т.п]]
     return render_template('profile_student.html', info_student=info_student)
 
@@ -152,12 +179,11 @@ def add_result(id):
             rasd = ':'
         else:
             rasd = ' '
-        print(time)
         if not time:
             return render_template('new_resultt.html', incorrect='Укажате время', info_student=info_student,
                                    competition_list=competition_list, user=current_user)
         elif len(time.split(rasd)) != 3 or len(time.split(rasd)[0]) != 2 or len(
-                    time.split(rasd)[1]) != 2 or len(time.split(rasd)[2]) != 2:
+                time.split(rasd)[1]) != 2 or len(time.split(rasd)[2]) != 2:
             return render_template('new_resultt.html', incorrect='Время указоно не верно', info_student=info_student,
                                    competition_list=competition_list, user=current_user)
         else:
@@ -182,10 +208,8 @@ def add_result(id):
 @app.route('/add-competition', methods=['GET', 'POST'])
 @login_required
 def add_competition():
-    print(request.method)
     if request.method == 'POST':
         data_c = request.form.get('data')
-        print([data_c])
         name_c = request.form.get('name_competition')
         if len(data_c.split('-')) == 3:
             rasd = '-'
@@ -215,7 +239,7 @@ def add_competition():
             db_sess = db_session.create_session()
             db_sess.add(coach)
             db_sess.commit()
-            return redirect(url_for('home_group'))
+            return redirect(url_for('home'))
     return render_template('new_competition.html', incorrect='', user=current_user)
 
 
@@ -240,10 +264,12 @@ def add_group():
     ch_list = [current_user]
     for i in ch_list:
         name_ch_lst.append(i.name + ' ' + i.surname + ' ' + str(i.id_coach))
+    list_group = []
+    for i in db_sess.query(Group).all():
+        list_group.append(i.name_group)
     if request.method == 'POST':
         name_coach = request.form.get('name_ch')
         name_group = request.form.get('name_group')
-        print(name_coach, name_group)
         if not name_group:
             return render_template('new_group.html', incorrect='Неуказано имя группы', name_ch_lst=name_ch_lst,
                                    user=current_user)
@@ -255,15 +281,20 @@ def add_group():
             return render_template('new_group.html', incorrect='Имя группы должно быть меньше 15 символов',
                                    name_ch_lst=name_ch_lst,
                                    user=current_user)
+        elif name_group in list_group:
+            print(11)
+            return render_template('new_group.html', incorrect='Имя группы должно быть уникально',
+                                   name_ch_lst=name_ch_lst,
+                                   user=current_user)
         else:
             group = Group()
             group.id_group = None
             group.name_group = name_group
-            group.id_couch = int(name_coach.split(' ')[-1])
+            group.id_couch = current_user.id_coach
             db_sess = db_session.create_session()
             db_sess.add(group)
             db_sess.commit()
-            return redirect(url_for('home_group'))
+            return redirect(url_for('home'))
     return render_template('new_group.html', incorrect='', name_ch_lst=name_ch_lst, user=current_user)
 
 
@@ -281,9 +312,7 @@ def add_student():
         name_student = request.form.get('name')
         data_student = request.form.get('data')
         name_gr = request.form.get('g')
-        print(name_gr, surname_student, name_student, data_student)
         pol_st = request.form.get('pol')
-        print(pol_st)
         if len(data_student.split('-')) == 3:
             rasd = '-'
         elif len(data_student.split(':')) == 3:
@@ -326,7 +355,7 @@ def add_student():
             db_sess = db_session.create_session()
             db_sess.add(student)
             db_sess.commit()
-            return redirect(url_for('home_group'))
+            return redirect(url_for('home'))
     return render_template('new_student.html', incorrect='', name_group=name_group, user=current_user)
 
 
