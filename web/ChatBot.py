@@ -1,35 +1,43 @@
-from Sender import Sender
-
-
 class ChatBot:
     def __init__(self):
         self.command_list = ['Загрузить из базы', 'Загрузить в базу', 'Добавить в базу']
         self.hello_msg = ['Привет', 'Доброго времени суток', 'Здравствуйте']
-        self.sender = Sender()
+        self.max_showed_msg = 5
+        self.msg_list = ['Чтобы начать беседу, нажмите на одну из кнопок', '', '', '', '']
 
-    def on_message(self, msg):
-        if msg not in self.command_list:
-            self.send_message('Я вас не понимаю')
+    def add_message(self, text):
+        self.__msg2list(text)
+        if text == self.command_list[0]:
+            self.__msg2list('Загрузка из базы прошла успешно')
+        elif text == self.command_list[1]:
+            self.__msg2list('Загрузка в базу прошла успешно')
         else:
-            if msg == self.command_list[0]:
-                name, surname = self.sender.get_request_to_user()
-                self.load_base(name, surname)
-            elif msg == self.command_list[1]:
-                name, surname, item = self.sender.get_request_to_user(targets=['name', 'surname', 'item'])
-                self.update_base(name, surname, item)
+            self.__msg2list('Информация добавлена в базу')
+
+    def __msg2list(self, text):
+        if self.msg_list[0] == 'Чтобы начать беседу, нажмите на одну из кнопок':
+            self.msg_list[0] = ''
+            self.msg_list[0] = text
+        else:
+            if '' in self.msg_list:
+                self.msg_list[self.msg_list.index('')] = text
             else:
-                name, surname, item = self.sender.get_request_to_user(targets=['name', 'surname', 'item'])
-                self.add_base(name, surname, item)
+                self.msg_list[0] = self.msg_list[1]
+                self.msg_list[1] = self.msg_list[2]
+                self.msg_list[2] = self.msg_list[3]
+                self.msg_list[3] = self.msg_list[4]
+                self.msg_list[4] = text
 
-    def send_message(self, text):
-        self.sender.put_messages(text)
 
-    def update_base(self, name, surname, item):
+    def __update_base(self, name, surname, item):
         pass
 
-    def load_base(self, name, surname):
+    def __load_base(self, name, surname):
         # TODO: Загрузить базу данных
         pass
 
-    def add_base(self, name, surname, item):
+    def __add_base(self, name, surname, item):
         pass
+
+    def load_last(self):
+        return self.msg_list
