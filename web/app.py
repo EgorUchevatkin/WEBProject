@@ -17,9 +17,9 @@ login_manager.login_view = 'login'
 
 
 @login_manager.user_loader
-def load_user(id):
+def load_user(id_coach):
     db_sess = db_session.create_session()
-    return db_sess.query(Coach).get(id)
+    return db_sess.query(Coach).get(id_coach)
 
 
 @app.route('/logout')
@@ -70,7 +70,7 @@ def group(id_group):
 def profile_student(id):
     db_sess = db_session.create_session()
     if not db_sess.query(Student).filter(Student.id_student == id).first():
-        return render_template('incotrent.html', title='Сообщение об ошипке', incorent='Не верно указан номер')
+        return render_template('incotrent.html', title='Сообщение об ошибке', incorent='Неверно указан номер')
     student = db_sess.query(Student).filter(Student.id_student == id).first()
     if db_sess.query(Group).filter(Group.id_group == student.id_group).first().id_couch != current_user.id_coach:
         return render_template('incotrent.html', title='Нет доступа',
@@ -162,13 +162,14 @@ def add_result(id):
     today = date.today()
     birth_date = student.data_of_birth
     student_birth = today.year - birth_date.year
+    if today.month < birth_date.month or today.month == birth_date.month and today.day < birth_date.day:
+        student_birth -= 1
     info_student = [student.name + ' ' + student.surname, str(student_birth), coach.surname + ' ' + coach.name,
                     group.name_group, id]
     competition_list = []
     for i in db_sess.query(Competition).all():
         competition_list.append(i.competition)
-    if today.month < birth_date.month or today.month == birth_date.month and today.day < birth_date.day:
-        student_birth -= 1
+    birth_date = student.data_of_birth
     if request.method == 'POST':
         dist_long = request.form.get('dist_long')
         dist_still = request.form.get('dist_still')
@@ -185,7 +186,7 @@ def add_result(id):
                                    competition_list=competition_list, user=current_user)
         elif len(time.split(rasd)) != 3 or len(time.split(rasd)[0]) != 2 or len(
                 time.split(rasd)[1]) != 2 or len(time.split(rasd)[2]) != 2:
-            return render_template('new_resultt.html', incorrect='Время указоно не верно', info_student=info_student,
+            return render_template('new_resultt.html', incorrect='Время указано не верно', info_student=info_student,
                                    competition_list=competition_list, user=current_user)
         else:
             db_sess = db_session.create_session()
