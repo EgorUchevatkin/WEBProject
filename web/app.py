@@ -43,6 +43,7 @@ def home():
 
 
 @app.route('/<id_group>')
+@login_required
 def group(id_group):
     db_sess = db_session.create_session()
     if not db_sess.query(Group).filter(Group.id_group == id_group).all():
