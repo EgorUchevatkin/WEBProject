@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block page_name %}{{ title }}{% endblock %}
+
+{% block content %}
+<br><br><br>
+<div class="offset-3 col-9"><h1>{{ incorent }}</h1></div>
+<button type="submit" class="btn btn-primary offset-5"><a href="{{ url_for('home') }}" class="auth_link">Назад</a>
+</button>
+{% endblock %}

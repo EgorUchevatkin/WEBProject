@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block page_name %}Добавить соревнования{% endblock %}
+{% block
+content %}
+<form method="POST">
+    <br>
+    <div class="form-group col-5 offset-1">
+        <label for="datal">Дата</label>
+        <input
+                type="text"
+                class="form-control"
+                id="data"
+                name="data"
+                placeholder="гггг-мм-дд"
+        />
+    </div>
+    <div class="form-group col-5 offset-1">
+        <label for="namel">Имя соревнований</label>
+        <input
+                type="text"
+                class="form-control"
+                id="name_competition"
+                name="name_competition"
+        />
+    </div>
+    <label class="offset-2">{{ incorrect }}</label>
+    <br><br>
+    <div>
+        <button type="submit" class="btn btn-primary offset-2">Добавить</button>
+        <button type="submit" class="btn btn-primary offset-2"><a href="{{ url_for('home') }}" class="auth_link">Назад</a>
+        </button>
+
+    </div>
+</form>
+{% endblock %}

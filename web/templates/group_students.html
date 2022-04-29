@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block page_name %}Главная{% endblock %}
+{% block content %}
+<div class="container" style="margin-top: 35px; color:white;font-family: 'Inter'">
+    <div class="row">
+        <div class="col-5 new-card">
+            Группы
+        </div>
+        <div class="col-5 offset-2 new-card">
+            Участники
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5 offset-7">
+            {% for i in info_student %}
+            <a href="{{ url_for('profile_student', id=i[1]) }}" class="record col-3 offset-1" style="color: black;">{{
+                i[0] }}</a>
+            <br>
+            {% endfor %}
+            <br><br><br><br><br>
+            <button type="submit" class="btn btn-primary col-5"><a href="{{ url_for('add_student') }}"
+                                                                        class="auth_link">Добавить студента</a>
+            </button>
+            <br><br>
+             <button type="submit" class="btn btn-primary col-5"><a href="{{ url_for('add_group') }}"
+                                                                        class="auth_link">Добавить группу</a>
+            </button>
+        </div>
+    </div>
+    <div class="row" style="margin-top: {{ otstup }}px;">
+        <div class="col-5">
+            {% for i in info_group %}
+            <a href="{{ url_for('group', id_group=i[1]) }}" class="record col-5" style="color: black;">{{ i[0] }}</a>
+            <br>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

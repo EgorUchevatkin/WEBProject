@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block page_name %} Добавить {% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 35px; color:white;font-family: 'Inter'">
+    <div class="row">
+        <div class="col-4 offset-3 new-card">
+            Карточка спортсмена
+        </div>
+    </div>
+    <form method="POST">
+        <div class="col-5 offset-3">
+            <div class="col-4 offset-3" style="color: black; text-align: justify;"> Фамилия</div>
+            <p><input class="offset-2" type="text" name="surname" placeholder="Фамилия" size="20" id="surname"/>
+            </p>
+            <div class="col-4 offset-3" style="color: black; text-align: justify;"> Имя </div>
+            <p><input class="offset-2" type="text" name="name" placeholder="Имя" size="20" id="name"/>
+            </p>
+            <div class="col-4 offset-3" style="color: black; text-align: justify;"> Дата </div>
+            <p><input class="offset-2" type="text" name="data" placeholder="дата рождения (гггг:мм:дд)" size="20"
+                      id="data"/>
+            </p>
+            <div class="col-4 offset-3" style="color: black; text-align: justify;"> Имя группы </div>
+            <p><select class="col-4 offset-2" name="g" id="g">
+                {% for i in name_group %}
+                <option>{{i}}</option>
+                {% endfor %}
+            </select></p>
+
+            <div class="col-4 offset-3" style="color: black; text-align: justify;"> Пол </div>
+            <p><select class="col-4 offset-2" name="pol" id="pol">
+                <option>м</option>
+                <option>ж</option>
+            </select></p>
+            <div class="col-4 offset-2" style="color: black; text-align: justify;">{{ incorrect }}</div><br>
+            <button type="submit" class="btn btn-primary offset-2">Добавить спортсмена</button>
+            <br/><br/>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
