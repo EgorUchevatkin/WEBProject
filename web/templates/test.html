@@ -88,9 +88,14 @@
                 {% endif %}
             {% endfor %}
             <form method="post" action="/">
-                <button class="btn btn-primary" type="submit" name="btn" value="upload" style='width:100%;'>Загрузить из базы</button>
-                <button class="btn btn-primary" type="submit" name="btn" value="load" style='width:100%;'>Загрузить в базу</button>
-                <button class="btn btn-primary" type="submit" name="btn" value="add" style='width:100%;'>Добавить в базу</button>
+                {% if check == 1 %}
+                    <button class="btn btn-primary" type="submit" name="btn" value="new-competition" style='width:100%;'>Создать новое соревнование</button>
+                    <button class="btn btn-primary" type="submit" name="btn" value="new-group" style='width:100%;'>Создать новую группу</button>
+                    <button class="btn btn-primary" type="submit" name="btn" value="new-result" style='width:100%;'>Добавить новый результат</button>
+                    <button class="btn btn-primary" type="submit" name="btn" value="new-student" style='width:100%;'>Добавить нового ученика</button>
+                {% else %}
+                    <button class="btn btn-primary" type="submit" name="btn" value="continue" style='width:100%;'>Продолжить</button>
+                {% endif %}
             </form>
         </div>
     </body>

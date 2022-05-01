@@ -8,20 +8,26 @@ app = Flask(__name__)
 def test():
     if request.method == 'GET':
         msg_list = ChatBot.load_last()
-        return render_template('test.html', msg_list=msg_list)
+        return render_template('test.html', msg_list=msg_list, check=1)
     else:
-        if request.form['btn'] == 'upload':
-            ChatBot.add_message('Загрузить из базы')
+        if request.form['btn'] == 'new-competition':
+            ChatBot.add_message('Создать новое соревнование')
             msg_list = ChatBot.load_last()
-            return render_template('test.html', msg_list=msg_list)
-        elif request.form['btn'] == 'load':
-            ChatBot.add_message('Загрузить в базу')
+            return render_template('test.html', msg_list=msg_list, check=2)
+        elif request.form['btn'] == 'new-group':
+            ChatBot.add_message('Создать новую группу')
             msg_list = ChatBot.load_last()
-            return render_template('test.html', msg_list=msg_list)
+            return render_template('test.html', msg_list=msg_list, check=2)
+        elif request.form['btn'] == 'new-result':
+            ChatBot.add_message('Добавить новый результат')
+            msg_list = ChatBot.load_last()
+            return render_template('test.html', msg_list=msg_list, check=2)
+        elif request.form['btn'] == 'new-student':
+            ChatBot.add_message('Добавить нового ученика')
+            msg_list = ChatBot.load_last()
+            return render_template('test.html', msg_list=msg_list, check=2)
         else:
-            ChatBot.add_message('Добавить в базу')
-            msg_list = ChatBot.load_last()
-            return render_template('test.html', msg_list=msg_list)
+            return render_template(ChatBot.get_html_page())
 
 
 if __name__ == '__main__':
