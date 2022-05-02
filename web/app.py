@@ -1,12 +1,13 @@
 from flask import Flask, render_template, redirect, request, url_for
-from web.data import db_session
+from data import db_session
 from flask import Flask, render_template, redirect, request
-from web.data.db_class import Student, Coach, Group, Result, SprStill, SprDist, Competition
+from data.db_class import Student, Coach, Group, Result, SprStill, SprDist, Competition
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import date
-from web.form.form import LoginForm
+from form.form import LoginForm
 import requests
 import datetime
+from ChatBot import ChatBot
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -32,14 +33,46 @@ def logout():
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    db_sess = db_session.create_session()
-    list_group = []
-    for i in db_sess.query(Group).filter(Group.id_couch == current_user.id_coach).all():
-        list_group.append([i.name_group + ' ' + str(i.id_group), i.id_group])
-    if len(list_group) == 0:
-        list_group = [['У вас нет групп', -11]]
-    return render_template("group.html", info_group=list_group, otstup=str((len(list_group) - 1) * -30),
-                           user=current_user)
+    msg_list = ChatBot.load_last()
+    if msg_list[0] not in ChatBot.hello_msg:
+        ChatBot.clear_message_list()
+        msg_list = ChatBot.load_last()
+    if request.method == 'GET':
+        db_sess = db_session.create_session()
+        list_group = []
+        for i in db_sess.query(Group).filter(Group.id_couch == current_user.id_coach).all():
+            list_group.append([i.name_group + ' ' + str(i.id_group), i.id_group])
+        if len(list_group) == 0:
+            list_group = [['У вас нет групп', -11]]
+        return render_template("group.html", info_group=list_group, otstup=str((len(list_group) - 1) * -30),
+                               user=current_user, msg_list=msg_list, check=1)
+    else:
+        if request.form['btn'] == 'new-competition':
+            ChatBot.add_message('Создать новое соревнование')
+            msg_list = ChatBot.load_last()
+            return render_template('group.html', msg_list=msg_list, check=2)
+        elif request.form['btn'] == 'new-group':
+            ChatBot.add_message('Создать новую группу')
+            msg_list = ChatBot.load_last()
+            return render_template('group.html', msg_list=msg_list, check=2)
+        elif request.form['btn'] == 'new-result':
+            ChatBot.add_message('Для добавления нового результата перейдите в группу')
+            msg_list = ChatBot.load_last()
+            return render_template('group.html', msg_list=msg_list, check=2)
+        elif request.form['btn'] == 'new-student':
+            ChatBot.add_message('Добавить нового ученика')
+            msg_list = ChatBot.load_last()
+            return render_template('group.html', msg_list=msg_list, check=2)
+        else:
+            html_page = ChatBot.get_html_page()
+            if html_page == 'new_competition.html':
+                return render_template(ChatBot.get_html_page(), incorent='', user=current_user)
+            elif html_page == 'new_group.html':
+                return render_template(ChatBot.get_html_page(), incorent='', user=current_user)
+            elif html_page == 'group.html':
+                return render_template(ChatBot.get_html_page(), msg_list=msg_list, check=1)
+            else:
+                return render_template(ChatBot.get_html_page(), incorent='', user=current_user)
 
 
 @app.route('/<id_group>')
@@ -362,4 +395,5 @@ def add_student():
 
 
 if __name__ == '__main__':
+    ChatBot = ChatBot()
     app.run(port=8080, host='127.0.0.1', debug=True)

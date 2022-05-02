@@ -1,9 +1,11 @@
 import datetime
 import sqlalchemy
-from web.data.db_session import SqlAlchemyBase
+# from db_session import SqlAlchemyBase
 from flask_login import UserMixin, LoginManager, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
+import sqlalchemy.ext.declarative as dec
 
+SqlAlchemyBase = dec.declarative_base()
 
 class Student(SqlAlchemyBase):
     __tablename__ = 'student'
